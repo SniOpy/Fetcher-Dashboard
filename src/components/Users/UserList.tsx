@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { fakeUsers } from '../../data/fakeUsers';
 
 export default function UserList() {
-  const [users, setUsers] = useState(fakeUsers);
+  const [allUsers, setAllUsers] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('https://reqres.in/api/users');
         const result = await response.json();
-
         if (!result) {
           throw new Error('network response not ok');
         }
+        setAllUsers(result.data);
         setUsers(result.data);
       } catch (error) {
         console.error(error.message);
@@ -23,14 +24,45 @@ export default function UserList() {
     fetchData();
   }, []);
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (!search) return;
+
+    // on filtre les utilisateurs selon le prénom, le nom ou l'email
+    const filtered = allUsers.filter(
+      (user) =>
+        `${user.first_name} ${user.last_name}`.toLowerCase().includes(search.toLowerCase()) ||
+        user.first_name.toLowerCase().includes(search.toLowerCase()) ||
+        user.last_name.toLowerCase().includes(search.toLowerCase()) ||
+        user.email.toLowerCase().includes(search.toLowerCase())
+    );
+
+    setUsers(filtered);
+  };
+
+  const handleReset = () => {
+    setUsers(allUsers);
+    setSearch('');
+  };
+
   return (
     <Wrapper>
       <Title> Liste des utilisateurs</Title>
+      <Form onSubmit={handleSubmit}>
+        <InputSearch
+          type="text"
+          onChange={(e) => setSearch(e.target.value)}
+          value={search}
+          placeholder="Recherche un utilisateur"
+        />
+        <FormButton type="submit">Rechercher</FormButton>
+        <FormButton type="button" onClick={handleReset}>
+          Réinitialiser
+        </FormButton>
+      </Form>
 
-      <form action="">
-        <input type="text" />
-      </form>
-
+      <br />
       <CardContainer>
         {users.map((user) => (
           <UserCardStyled key={user.id}>
@@ -65,6 +97,50 @@ const pulse = keyframes`
   }
   50% {
     transform: scale(1.04);
+  }
+`;
+const Form = styled.form`
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+`;
+
+const InputSearch = styled.input`
+  padding: 10px 15px;
+  border: none;
+  border-radius: 12px;
+  background-color: #1c2541;
+  color: #f0f0f0;
+  font-size: 16px;
+  width: 250px;
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.2);
+  transition: all 0.3s ease;
+
+  &::placeholder {
+    color: #a0aec0;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 12px rgba(88, 166, 255, 0.5);
+  }
+`;
+
+const FormButton = styled.button`
+  padding: 10px 15px;
+  border: none;
+  border-radius: 12px;
+  background-color: #58a6ff;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #3a8bd7;
   }
 `;
 
