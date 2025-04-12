@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
+import UserContext from '../context/UserContext';
 
-export default function Form({ allUsers, search }) {
+export default function Form() {
+  //! state
+  const { allUsers, search, setSearch, setUsers } = useContext(UserContext);
+
+  //! comportements
   const handleSubmit = (event) => {
     event.preventDefault();
 
     if (!search) return;
-
     // on filtre les utilisateurs selon le prénom, le nom ou l'email
     const filtered = allUsers.filter(
       (user) =>
@@ -23,6 +27,7 @@ export default function Form({ allUsers, search }) {
     setUsers(allUsers);
     setSearch('');
   };
+  //! affichage
   return (
     <FormStyled onSubmit={handleSubmit}>
       <InputSearch
@@ -31,7 +36,9 @@ export default function Form({ allUsers, search }) {
         value={search}
         placeholder="Recherche un utilisateur"
       />
-      <FormButton type="submit">Rechercher</FormButton>
+      <FormButton type="submit" onSubmit={handleSubmit}>
+        Rechercher
+      </FormButton>
       <FormButton type="button" onClick={handleReset}>
         Réinitialiser
       </FormButton>
@@ -39,7 +46,7 @@ export default function Form({ allUsers, search }) {
   );
 }
 
-const FormStyled = styled.div`
+const FormStyled = styled.form`
   display: flex;
   justify-content: center;
   gap: 12px;

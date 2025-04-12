@@ -2,11 +2,21 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import CardContainer from '../CardContainer';
 import Form from '../Form';
+import UserContext from '../../context/UserContext';
 
 export default function UserList() {
   const [allUsers, setAllUsers] = useState([]);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
+
+  const userContextValue = {
+    allUsers,
+    setAllUsers,
+    users,
+    setUsers,
+    search,
+    setSearch,
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,13 +37,15 @@ export default function UserList() {
   }, []);
 
   return (
-    <Wrapper>
-      <Title> Liste des utilisateurs</Title>
-      <Form allUsers={allUsers} search={search} />
+    <UserContext.Provider value={userContextValue}>
+      <Wrapper>
+        <Title> Liste des utilisateurs</Title>
+        <Form />
 
-      <br />
-      <CardContainer users={users} />
-    </Wrapper>
+        <br />
+        <CardContainer />
+      </Wrapper>
+    </UserContext.Provider>
   );
 }
 

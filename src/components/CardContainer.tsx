@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
+import UserContext from '../context/UserContext';
 
-export default function CardContainer({ users }) {
+export default function CardContainer() {
+  const { users } = useContext(UserContext);
+
   return (
     <CardContainerStyled>
       {users.map((user) => (
