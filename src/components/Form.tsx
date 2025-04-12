@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import UserContext from '../context/UserContext';
 
@@ -6,12 +6,14 @@ export default function Form() {
   //! state
   const { allUsers, search, setSearch, setUsers } = useContext(UserContext);
 
-  //! comportements
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  useEffect(() => {
+    if (!allUsers.length) return;
 
-    if (!search) return;
-    // on filtre les utilisateurs selon le prénom, le nom ou l'email
+    if (search.trim().length < 3) {
+      setUsers(allUsers); // Réinitialise si moins de 3 lettres
+      return;
+    }
+
     const filtered = allUsers.filter(
       (user) =>
         `${user.first_name} ${user.last_name}`.toLowerCase().includes(search.toLowerCase()) ||
@@ -21,7 +23,9 @@ export default function Form() {
     );
 
     setUsers(filtered);
-  };
+  }, [search, allUsers]);
+
+  //! comportements
 
   const handleReset = () => {
     setUsers(allUsers);
@@ -29,16 +33,13 @@ export default function Form() {
   };
   //! affichage
   return (
-    <FormStyled onSubmit={handleSubmit}>
+    <FormStyled>
       <InputSearch
         type="text"
         onChange={(e) => setSearch(e.target.value)}
         value={search}
         placeholder="Recherche un utilisateur"
       />
-      <FormButton type="submit" onSubmit={handleSubmit}>
-        Rechercher
-      </FormButton>
       <FormButton type="button" onClick={handleReset}>
         Réinitialiser
       </FormButton>
