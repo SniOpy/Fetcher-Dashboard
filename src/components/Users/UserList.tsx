@@ -3,11 +3,12 @@ import styled from 'styled-components';
 import CardContainer from '../CardContainer';
 import Form from '../Form';
 import UserContext from '../../context/UserContext';
+import { User } from '../../types/user';
 
 export default function UserList() {
-  const [allUsers, setAllUsers] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState('');
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [search, setSearch] = useState<string>('');
 
   const userContextValue = {
     allUsers,
@@ -29,7 +30,7 @@ export default function UserList() {
         setAllUsers(result.data);
         setUsers(result.data);
       } catch (error) {
-        console.error(error.message);
+        console.error((error as Error).message);
       }
     };
 
